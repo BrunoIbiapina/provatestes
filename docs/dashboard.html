@@ -1,0 +1,1407 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QA Automation — System Overview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@300;400;500;700&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0E1521;
+    --bg-warm: #1A1612;
+    --surface: #15202E;
+    --surface-2: #1B2837;
+    --border: #243142;
+    --border-strong: #3A4858;
+    --text: #F5EFE0;
+    --text-mid: #A8A096;
+    --text-muted: #6B6358;
+    --text-faint: #4A5566;
+    --amber: #E0A95B;
+    --amber-deep: #C88A3B;
+    --sage: #87A878;
+    --cyan: #7FB8C9;
+    --rose: #C9543E;
+    --serif: 'Instrument Serif', ui-serif, Georgia, serif;
+    --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Consolas, monospace;
+    --sans: 'Manrope', system-ui, -apple-system, sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    background-image:
+      radial-gradient(circle at 20% 0%, rgba(224, 169, 91, 0.04) 0%, transparent 40%),
+      radial-gradient(circle at 80% 100%, rgba(135, 168, 120, 0.04) 0%, transparent 40%);
+    color: var(--text);
+    font-family: var(--sans);
+    font-weight: 400;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+    padding: 56px 64px 80px;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(to right, var(--border) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--border) 1px, transparent 1px);
+    background-size: 80px 80px;
+    opacity: 0.18;
+    pointer-events: none;
+    z-index: 0;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+  }
+
+  .wrap {
+    max-width: 1320px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ============ TOP BAR ============ */
+  .top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+    animation: fade 0.6s ease-out;
+  }
+
+  .top-left { display: flex; gap: 32px; align-items: center; }
+  .pulse {
+    display: inline-flex; align-items: center; gap: 8px;
+    color: var(--sage);
+  }
+  .pulse::before {
+    content: ''; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--sage); box-shadow: 0 0 8px var(--sage);
+    animation: pulse 1.6s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.85); }
+  }
+
+  /* ============ HERO ============ */
+  .hero {
+    padding: 88px 0 72px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 64px;
+    align-items: end;
+    border-bottom: 1px solid var(--border);
+    animation: fade 0.8s 0.1s both ease-out;
+  }
+
+  /* ============ TOPOLOGY GRAPH ============ */
+  .topology-wrap {
+    margin-top: 64px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background:
+      radial-gradient(ellipse at 50% 50%, rgba(224, 169, 91, 0.04) 0%, transparent 65%),
+      linear-gradient(180deg, #0F1722 0%, #0A1018 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  .topology-canvas {
+    position: relative;
+    width: 100%;
+    height: 600px;
+    cursor: grab;
+  }
+  .topology-canvas:active { cursor: grabbing; }
+  .topology-canvas canvas { display: block; width: 100%; height: 100%; }
+
+  .topo-overlay {
+    position: absolute;
+    pointer-events: none;
+    z-index: 2;
+  }
+  .topo-overlay.tl { top: 18px; left: 22px; }
+  .topo-overlay.tr { top: 18px; right: 22px; text-align: right; }
+  .topo-overlay.bl { bottom: 18px; left: 22px; }
+  .topo-overlay.br { bottom: 18px; right: 22px; text-align: right; }
+
+  .topo-overlay .label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-faint);
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    line-height: 1.8;
+  }
+  .topo-overlay .v { color: var(--amber); }
+  .topo-overlay .v-sage { color: var(--sage); }
+  .topo-overlay .v-cyan { color: var(--cyan); }
+
+  .topo-corner {
+    position: absolute; width: 12px; height: 12px;
+    border-color: var(--border-strong);
+    border-style: solid; border-width: 0;
+    z-index: 2; pointer-events: none;
+  }
+  .topo-corner.tl { top: 4px; left: 4px; border-top-width: 1px; border-left-width: 1px; }
+  .topo-corner.tr { top: 4px; right: 4px; border-top-width: 1px; border-right-width: 1px; }
+  .topo-corner.bl { bottom: 4px; left: 4px; border-bottom-width: 1px; border-left-width: 1px; }
+  .topo-corner.br { bottom: 4px; right: 4px; border-bottom-width: 1px; border-right-width: 1px; }
+
+  .node-tooltip {
+    position: absolute;
+    pointer-events: none;
+    background: rgba(15, 23, 34, 0.92);
+    border: 1px solid var(--border-strong);
+    padding: 8px 12px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text);
+    border-radius: 2px;
+    opacity: 0;
+    transform: translate(-50%, -140%);
+    transition: opacity 0.15s ease;
+    z-index: 10;
+    white-space: nowrap;
+    backdrop-filter: blur(6px);
+  }
+  .node-tooltip .nt-cat {
+    font-size: 9px;
+    color: var(--text-faint);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+    display: block;
+  }
+
+  .topology-legend {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    border-top: 1px solid var(--border);
+  }
+  .leg {
+    padding: 20px 24px;
+    border-right: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .leg:last-child { border-right: none; }
+  .leg .swatch {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .leg .name {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text);
+    letter-spacing: 0.05em;
+  }
+  .leg .count {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-faint);
+    margin-left: auto;
+    letter-spacing: 0.15em;
+  }
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 20px;
+  }
+  .eyebrow .num {
+    color: var(--text-faint);
+    margin-right: 12px;
+  }
+  h1 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(64px, 8vw, 124px);
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    color: var(--text);
+  }
+  h1 em {
+    font-style: italic;
+    color: var(--amber);
+  }
+  h1 .x {
+    font-style: italic;
+    color: var(--amber);
+    font-size: 0.9em;
+    margin: 0 0.05em;
+  }
+  .lede {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 22px;
+    color: var(--text-mid);
+    margin-top: 28px;
+    max-width: 620px;
+    line-height: 1.4;
+  }
+
+  .meta-block {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-mid);
+    text-align: right;
+    line-height: 1.9;
+    letter-spacing: 0.05em;
+  }
+  .meta-block .key { color: var(--text-faint); margin-right: 10px; }
+  .meta-block .val { color: var(--text); }
+
+  /* ============ KPI GRID ============ */
+  .kpis {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    margin-top: 64px;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    animation: fade 0.8s 0.25s both ease-out;
+    perspective: 1200px;
+  }
+  .kpi {
+    padding: 36px 28px 32px;
+    border-right: 1px solid var(--border);
+    position: relative;
+    transition: background 0.4s ease, transform 0.3s ease, box-shadow 0.4s ease;
+    transform-style: preserve-3d;
+    will-change: transform;
+  }
+  .kpi:last-child { border-right: none; }
+  .kpi:hover {
+    background: rgba(224, 169, 91, 0.04);
+    box-shadow: 0 24px 48px -24px rgba(224, 169, 91, 0.18), inset 0 1px 0 rgba(224, 169, 91, 0.1);
+  }
+  .kpi:hover .num,
+  .kpi:hover .label,
+  .kpi:hover .sub,
+  .kpi:hover .corner {
+    transform: translateZ(20px);
+  }
+  .kpi .num,
+  .kpi .label,
+  .kpi .sub,
+  .kpi .corner {
+    transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+    transform: translateZ(0);
+  }
+  .kpi .label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.28em;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+  .kpi .num {
+    font-family: var(--serif);
+    font-size: 88px;
+    line-height: 0.9;
+    color: var(--text);
+    letter-spacing: -0.03em;
+    font-weight: 400;
+  }
+  .kpi .num em { color: var(--amber); font-style: italic; }
+  .kpi .sub {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-mid);
+    margin-top: 18px;
+    letter-spacing: 0.03em;
+  }
+  .kpi .corner {
+    position: absolute; top: 12px; right: 16px;
+    font-family: var(--mono); font-size: 9px;
+    color: var(--text-faint); letter-spacing: 0.2em;
+  }
+
+  /* ============ SECTION HEADERS ============ */
+  .section {
+    margin-top: 96px;
+    animation: fade 0.8s both ease-out;
+  }
+  .section.in-view { animation-delay: 0.1s; }
+
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    gap: 24px;
+    margin-bottom: 40px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 20px;
+  }
+  .section-head .num {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    color: var(--amber);
+  }
+  .section-head h2 {
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 48px;
+    line-height: 1;
+    color: var(--text);
+    letter-spacing: -0.01em;
+  }
+  .section-head .tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-faint);
+    letter-spacing: 0.2em;
+    margin-left: auto;
+  }
+
+  /* ============ TWO-COL BREAKDOWN ============ */
+  .breakdown {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 64px;
+  }
+  .panel {
+    padding: 32px 32px 28px;
+    background: linear-gradient(180deg, rgba(21, 32, 46, 0.4), rgba(21, 32, 46, 0.15));
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    position: relative;
+  }
+  .panel::before {
+    content: ''; position: absolute; top: 0; left: 0;
+    width: 32px; height: 1px; background: var(--amber);
+  }
+  .panel.web::before { background: var(--sage); }
+
+  .panel-title {
+    display: flex; align-items: baseline; justify-content: space-between;
+    margin-bottom: 32px;
+  }
+  .panel-title .name {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 32px;
+    color: var(--text);
+  }
+  .panel-title .total {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--text-mid);
+    letter-spacing: 0.1em;
+  }
+  .panel-title .total .big {
+    color: var(--amber); font-size: 22px; font-weight: 500;
+  }
+  .panel.web .panel-title .total .big { color: var(--sage); }
+
+  .feat {
+    display: grid;
+    grid-template-columns: 100px 1fr 60px;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 0;
+    border-top: 1px dashed var(--border);
+  }
+  .feat:first-of-type { border-top: 1px solid var(--border-strong); }
+  .feat .fname {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .feat .bar {
+    height: 6px;
+    background: var(--border);
+    border-radius: 1px;
+    overflow: hidden;
+    position: relative;
+  }
+  .feat .bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--amber-deep), var(--amber));
+    transform-origin: left;
+    animation: barIn 1s 0.5s both cubic-bezier(0.7, 0, 0.3, 1);
+  }
+  .panel.web .feat .bar-fill {
+    background: linear-gradient(90deg, #5F8060, var(--sage));
+  }
+  @keyframes barIn {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(var(--w, 1)); }
+  }
+  .feat .count {
+    font-family: var(--serif);
+    font-size: 28px;
+    color: var(--text);
+    text-align: right;
+    line-height: 1;
+  }
+
+  .panel-foot {
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+  }
+  .marker-pill {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border: 1px solid var(--border-strong);
+    border-radius: 2px;
+    color: var(--text-mid);
+  }
+  .marker-pill .v { color: var(--amber); margin-left: 6px; }
+  .panel.web .marker-pill .v { color: var(--sage); }
+
+  /* ============ PIPELINE TIMELINE ============ */
+  .timeline {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+    position: relative;
+  }
+  .timeline::before {
+    content: ''; position: absolute;
+    top: 28px; left: 5%; right: 5%;
+    height: 1px; background: var(--border-strong);
+    z-index: 0;
+  }
+  .step {
+    position: relative;
+    z-index: 1;
+    padding-top: 48px;
+  }
+  .step::before {
+    content: ''; position: absolute; top: 22px; left: 50%;
+    transform: translateX(-50%);
+    width: 12px; height: 12px;
+    background: var(--bg); border: 1.5px solid var(--text-faint);
+    border-radius: 50%;
+  }
+  .step.active::before {
+    border-color: var(--amber);
+    box-shadow: 0 0 0 4px rgba(224, 169, 91, 0.12);
+  }
+  .step .stage {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-faint);
+    letter-spacing: 0.2em;
+    margin-bottom: 6px;
+  }
+  .step .label {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 22px;
+    color: var(--text);
+    line-height: 1.1;
+    margin-bottom: 6px;
+  }
+  .step .desc {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-mid);
+    line-height: 1.5;
+  }
+
+  /* ============ STACK CHIPS ============ */
+  .stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .chip {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    padding: 10px 16px;
+    border: 1px solid var(--border-strong);
+    background: var(--surface);
+    color: var(--text);
+    border-radius: 2px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+  }
+  .chip:hover {
+    border-color: var(--amber);
+    color: var(--amber);
+  }
+  .chip .ver {
+    color: var(--text-faint);
+    font-size: 10px;
+  }
+  .chip .dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--amber);
+  }
+  .chip[data-cat="api"] .dot { background: var(--amber); }
+  .chip[data-cat="web"] .dot { background: var(--sage); }
+  .chip[data-cat="ci"] .dot { background: var(--cyan); }
+  .chip[data-cat="util"] .dot { background: var(--text-mid); }
+
+  /* ============ PRINCIPLES ============ */
+  .principles {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+  }
+  .pri {
+    padding: 28px 28px 30px;
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .pri:nth-child(3n) { border-right: none; }
+  .pri:nth-last-child(-n+3) { border-bottom: none; }
+  .pri .pkey {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-faint);
+    letter-spacing: 0.25em;
+    margin-bottom: 14px;
+  }
+  .pri .ptitle {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 24px;
+    color: var(--text);
+    margin-bottom: 10px;
+    line-height: 1.15;
+  }
+  .pri .pbody {
+    font-size: 14px;
+    color: var(--text-mid);
+    line-height: 1.55;
+  }
+
+  /* ============ LINKS ============ */
+  .links {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .lnk {
+    display: block;
+    padding: 28px 24px;
+    color: var(--text);
+    text-decoration: none;
+    border-right: 1px solid var(--border);
+    transition: background 0.25s ease, padding-left 0.25s ease;
+  }
+  .lnk:last-child { border-right: none; }
+  .lnk:hover {
+    background: rgba(224, 169, 91, 0.04);
+    padding-left: 32px;
+  }
+  .lnk .ltype {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--amber);
+    margin-bottom: 8px;
+  }
+  .lnk .lname {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 22px;
+  }
+  .lnk .larr {
+    font-family: var(--mono);
+    font-size: 14px;
+    color: var(--text-faint);
+    margin-top: 8px;
+    transition: color 0.25s ease;
+  }
+  .lnk:hover .larr { color: var(--amber); }
+
+  /* ============ FOOTER ============ */
+  footer {
+    margin-top: 96px;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+  }
+  footer .sig em {
+    font-family: var(--serif);
+    font-style: italic;
+    color: var(--amber);
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: 13px;
+    margin: 0 4px;
+  }
+
+  @keyframes fade {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* responsive */
+  @media (max-width: 980px) {
+    body { padding: 32px 24px 48px; }
+    .hero { grid-template-columns: 1fr; gap: 24px; }
+    .meta-block { text-align: left; }
+    .topology-canvas { height: 480px; }
+    .topology-legend { grid-template-columns: 1fr 1fr; }
+    .topology-legend .leg:nth-child(2) { border-right: none; }
+    .topology-legend .leg:nth-child(-n+2) { border-bottom: 1px solid var(--border); }
+    .kpis { grid-template-columns: repeat(2, 1fr); }
+    .kpi { border-bottom: 1px solid var(--border); }
+    .kpi:nth-child(2n) { border-right: none; }
+    .breakdown { grid-template-columns: 1fr; gap: 32px; }
+    .timeline { grid-template-columns: 1fr; gap: 0; }
+    .timeline::before { display: none; }
+    .step { padding: 16px 0 16px 24px; border-left: 1px solid var(--border); }
+    .step::before { top: 20px; left: -6px; transform: none; }
+    .principles { grid-template-columns: 1fr; }
+    .pri { border-right: none; }
+    .pri:nth-last-child(-n+3) { border-bottom: 1px solid var(--border); }
+    .pri:last-child { border-bottom: none; }
+    .links { grid-template-columns: 1fr 1fr; }
+    .lnk:nth-child(2n) { border-right: none; }
+    .lnk:nth-child(-n+2) { border-bottom: 1px solid var(--border); }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ============ TOP BAR ============ -->
+  <div class="top">
+    <div class="top-left">
+      <span>QA Automation · System Overview</span>
+      <span class="pulse">All Pipelines Operational</span>
+    </div>
+    <div>Rev 1.0 · May 2026</div>
+  </div>
+
+  <!-- ============ HERO ============ -->
+  <header class="hero">
+    <div>
+      <div class="eyebrow"><span class="num">N° 01</span>Trabalho Técnico · QA / Automação de Testes</div>
+      <h1>Petstore<span class="x">×</span><em>SauceDemo</em></h1>
+      <p class="lede">Suite de testes automatizados, em duas frentes — API REST e Web E2E — orquestrada por três pipelines independentes no GitHub Actions.</p>
+    </div>
+    <div class="meta-block">
+      <div><span class="key">AUTHOR</span><span class="val">B. Ibiapina</span></div>
+      <div><span class="key">DATE</span><span class="val">2026-05-02</span></div>
+      <div><span class="key">STACK</span><span class="val">Python 3.11 · pytest 8</span></div>
+      <div><span class="key">STATUS</span><span class="val">Build · passing</span></div>
+      <div><span class="key">LICENSE</span><span class="val">MIT</span></div>
+    </div>
+  </header>
+
+  <!-- ============ TOPOLOGY (3D GRAPH) ============ -->
+  <section class="section" style="margin-top: 64px;">
+    <div class="section-head">
+      <span class="num">00</span>
+      <h2>Topologia do projeto</h2>
+      <span class="tag">// FORCE-DIRECTED · 29 NODES · 47 EDGES</span>
+    </div>
+    <div class="topology-wrap">
+      <div class="topology-canvas" id="graph3d">
+        <span class="topo-corner tl"></span><span class="topo-corner tr"></span>
+        <span class="topo-corner bl"></span><span class="topo-corner br"></span>
+        <div class="topo-overlay tl">
+          <div class="label">// system graph · live</div>
+        </div>
+        <div class="topo-overlay tr">
+          <div class="label">drag <span class="v">↔</span> rotate · hover <span class="v">●</span> inspect</div>
+        </div>
+        <div class="topo-overlay bl">
+          <div class="label">force model<br>repel <span class="v">·</span> attract <span class="v">·</span> center <span class="v">·</span> damp</div>
+        </div>
+        <div class="topo-overlay br">
+          <div class="label">edges <span class="v">imports</span> + <span class="v-sage">tested by</span> + <span class="v-cyan">runs</span></div>
+        </div>
+        <div class="node-tooltip" id="nodeTooltip">
+          <span class="nt-cat" id="ttCat"></span>
+          <span id="ttName"></span>
+        </div>
+      </div>
+      <div class="topology-legend">
+        <div class="leg">
+          <span class="swatch" style="background: #F5EFE0;"></span>
+          <span class="name">Root</span>
+          <span class="count">01</span>
+        </div>
+        <div class="leg">
+          <span class="swatch" style="background: #E0A95B;"></span>
+          <span class="name">API · Petstore</span>
+          <span class="count">13 NODES</span>
+        </div>
+        <div class="leg">
+          <span class="swatch" style="background: #87A878;"></span>
+          <span class="name">Web · SauceDemo</span>
+          <span class="count">11 NODES</span>
+        </div>
+        <div class="leg">
+          <span class="swatch" style="background: #7FB8C9;"></span>
+          <span class="name">CI · Workflows</span>
+          <span class="count">04 NODES</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ KPI GRID ============ -->
+  <section class="kpis">
+    <div class="kpi">
+      <div class="corner">01</div>
+      <div class="label">Total Tests</div>
+      <div class="num">36</div>
+      <div class="sub">across two test suites</div>
+    </div>
+    <div class="kpi">
+      <div class="corner">02</div>
+      <div class="label">API · Web Split</div>
+      <div class="num"><em>23</em>/13</div>
+      <div class="sub">api endpoints · web e2e</div>
+    </div>
+    <div class="kpi">
+      <div class="corner">03</div>
+      <div class="label">CI Workflows</div>
+      <div class="num">3</div>
+      <div class="sub">parallel · path-filtered</div>
+    </div>
+    <div class="kpi">
+      <div class="corner">04</div>
+      <div class="label">Page Objects</div>
+      <div class="num">5</div>
+      <div class="sub">base + login + inventory + cart + checkout</div>
+    </div>
+  </section>
+
+  <!-- ============ BREAKDOWN ============ -->
+  <section class="section">
+    <div class="section-head">
+      <span class="num">02</span>
+      <h2>Cobertura por feature</h2>
+      <span class="tag">// MAPPED TO PYTEST MARKERS</span>
+    </div>
+    <div class="breakdown">
+
+      <div class="panel">
+        <div class="panel-title">
+          <span class="name">API · Petstore</span>
+          <span class="total"><span class="big">23</span> tests</span>
+        </div>
+
+        <div class="feat">
+          <span class="fname">Pet</span>
+          <div class="bar"><div class="bar-fill" style="--w: 1"></div></div>
+          <span class="count">9</span>
+        </div>
+        <div class="feat">
+          <span class="fname">User</span>
+          <div class="bar"><div class="bar-fill" style="--w: 0.89"></div></div>
+          <span class="count">8</span>
+        </div>
+        <div class="feat">
+          <span class="fname">Store</span>
+          <div class="bar"><div class="bar-fill" style="--w: 0.67"></div></div>
+          <span class="count">6</span>
+        </div>
+
+        <div class="panel-foot">
+          <span class="marker-pill">Smoke<span class="v">10</span></span>
+          <span class="marker-pill">Regression<span class="v">9</span></span>
+          <span class="marker-pill">Negative<span class="v">5</span></span>
+          <span class="marker-pill">Schema validated<span class="v">100%</span></span>
+        </div>
+      </div>
+
+      <div class="panel web">
+        <div class="panel-title">
+          <span class="name">Web · SauceDemo</span>
+          <span class="total"><span class="big">13</span> tests</span>
+        </div>
+
+        <div class="feat">
+          <span class="fname">Login</span>
+          <div class="bar"><div class="bar-fill" style="--w: 1"></div></div>
+          <span class="count">5</span>
+        </div>
+        <div class="feat">
+          <span class="fname">Cart</span>
+          <div class="bar"><div class="bar-fill" style="--w: 1"></div></div>
+          <span class="count">5</span>
+        </div>
+        <div class="feat">
+          <span class="fname">Checkout</span>
+          <div class="bar"><div class="bar-fill" style="--w: 0.6"></div></div>
+          <span class="count">3</span>
+        </div>
+
+        <div class="panel-foot">
+          <span class="marker-pill">Smoke<span class="v">3</span></span>
+          <span class="marker-pill">Regression<span class="v">5</span></span>
+          <span class="marker-pill">Negative<span class="v">5</span></span>
+          <span class="marker-pill">Screenshot on fail<span class="v">auto</span></span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ PIPELINE TIMELINE ============ -->
+  <section class="section">
+    <div class="section-head">
+      <span class="num">03</span>
+      <h2>Pipeline · do commit ao relatório</h2>
+      <span class="tag">// GITHUB ACTIONS</span>
+    </div>
+    <div class="timeline">
+      <div class="step active">
+        <div class="stage">01 · TRIGGER</div>
+        <div class="label">git push</div>
+        <div class="desc">push, pull_request, schedule, manual</div>
+      </div>
+      <div class="step active">
+        <div class="stage">02 · BUILD</div>
+        <div class="label">setup-python</div>
+        <div class="desc">matrix 3.11 + 3.12 · cache pip</div>
+      </div>
+      <div class="step active">
+        <div class="stage">03 · RUN</div>
+        <div class="label">pytest</div>
+        <div class="desc">api · web · lint em paralelo</div>
+      </div>
+      <div class="step active">
+        <div class="stage">04 · COLLECT</div>
+        <div class="label">artifacts</div>
+        <div class="desc">html · allure · screenshots</div>
+      </div>
+      <div class="step active">
+        <div class="stage">05 · REPORT</div>
+        <div class="label">badges &amp; logs</div>
+        <div class="desc">pr status · history</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ STACK ============ -->
+  <section class="section">
+    <div class="section-head">
+      <span class="num">04</span>
+      <h2>Stack</h2>
+      <span class="tag">// 11 FERRAMENTAS</span>
+    </div>
+    <div class="stack">
+      <span class="chip" data-cat="util"><span class="dot"></span>Python<span class="ver">3.11+</span></span>
+      <span class="chip" data-cat="util"><span class="dot"></span>pytest<span class="ver">8.3</span></span>
+      <span class="chip" data-cat="api"><span class="dot"></span>requests<span class="ver">2.32</span></span>
+      <span class="chip" data-cat="api"><span class="dot"></span>jsonschema<span class="ver">4.23</span></span>
+      <span class="chip" data-cat="api"><span class="dot"></span>Faker<span class="ver">30</span></span>
+      <span class="chip" data-cat="web"><span class="dot"></span>Selenium<span class="ver">4.25</span></span>
+      <span class="chip" data-cat="web"><span class="dot"></span>webdriver-manager<span class="ver">4</span></span>
+      <span class="chip" data-cat="util"><span class="dot"></span>Allure<span class="ver">2.13</span></span>
+      <span class="chip" data-cat="util"><span class="dot"></span>pytest-html<span class="ver">4.1</span></span>
+      <span class="chip" data-cat="util"><span class="dot"></span>pytest-xdist<span class="ver">3.6</span></span>
+      <span class="chip" data-cat="ci"><span class="dot"></span>GitHub Actions</span>
+      <span class="chip" data-cat="ci"><span class="dot"></span>flake8</span>
+    </div>
+  </section>
+
+  <!-- ============ PRINCIPLES ============ -->
+  <section class="section">
+    <div class="section-head">
+      <span class="num">05</span>
+      <h2>Princípios de design</h2>
+      <span class="tag">// SIX RULES</span>
+    </div>
+    <div class="principles">
+      <div class="pri">
+        <div class="pkey">01 · LAYERING</div>
+        <div class="ptitle">Page Object Model</div>
+        <div class="pbody">Cada tela do SauceDemo virou uma classe que esconde seletores e esperas. Os testes leem como história de usuário.</div>
+      </div>
+      <div class="pri">
+        <div class="pkey">02 · LAYERING</div>
+        <div class="ptitle">Service / Client</div>
+        <div class="pbody">Cada recurso da API tem seu cliente HTTP. Testes nunca falam direto com requests — sempre via PetClient, StoreClient, UserClient.</div>
+      </div>
+      <div class="pri">
+        <div class="pkey">03 · DATA</div>
+        <div class="ptitle">Factories &amp; Faker</div>
+        <div class="pbody">Zero hardcode. Cada teste gera massa fresca, com IDs grandes (10⁸–10⁹) para evitar colisão na API pública.</div>
+      </div>
+      <div class="pri">
+        <div class="pkey">04 · STABILITY</div>
+        <div class="ptitle">Esperas explícitas</div>
+        <div class="pbody">Nenhum time.sleep no projeto. WebDriverWait + ExpectedConditions resolve flakiness na origem.</div>
+      </div>
+      <div class="pri">
+        <div class="pkey">05 · CONTRACT</div>
+        <div class="ptitle">Schema validation</div>
+        <div class="pbody">Toda resposta de sucesso da API é validada contra um JSON Schema. Mudança de contrato é detectada antes de produção.</div>
+      </div>
+      <div class="pri">
+        <div class="pkey">06 · HYGIENE</div>
+        <div class="ptitle">Cleanup automático</div>
+        <div class="pbody">Fixtures usam yield: o teardown roda mesmo quando o teste falha. Nada de lixo na base.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ LINKS ============ -->
+  <section class="section">
+    <div class="section-head">
+      <span class="num">06</span>
+      <h2>Acesso rápido</h2>
+      <span class="tag">// READMEs &amp; DOCS</span>
+    </div>
+    <div class="links">
+      <a class="lnk" href="https://github.com/brunoibiapina/trabalho-qa-automacao#readme" target="_blank">
+        <div class="ltype">README · ROOT</div>
+        <div class="lname">Visão geral</div>
+        <div class="larr">→</div>
+      </a>
+      <a class="lnk" href="https://github.com/brunoibiapina/trabalho-qa-automacao/blob/main/api/README.md" target="_blank">
+        <div class="ltype">README · API</div>
+        <div class="lname">Petstore suite</div>
+        <div class="larr">→</div>
+      </a>
+      <a class="lnk" href="https://github.com/brunoibiapina/trabalho-qa-automacao/blob/main/web/README.md" target="_blank">
+        <div class="ltype">README · WEB</div>
+        <div class="lname">SauceDemo suite</div>
+        <div class="larr">→</div>
+      </a>
+      <a class="lnk" href="https://github.com/brunoibiapina/trabalho-qa-automacao/blob/main/TEST_STRATEGY.md" target="_blank">
+        <div class="ltype">DOC</div>
+        <div class="lname">Test Strategy</div>
+        <div class="larr">→</div>
+      </a>
+    </div>
+  </section>
+
+  <!-- ============ FOOTER ============ -->
+  <footer>
+    <div class="sig">Built by <em>B. Ibiapina</em> · Maio 2026</div>
+    <div>End of document</div>
+  </footer>
+
+</div>
+
+<script>
+  // Stagger reveal sections on scroll
+  const sections = document.querySelectorAll('.section');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.style.animation = 'fade 0.7s ease-out both';
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  sections.forEach(s => {
+    s.style.opacity = '0';
+    s.style.animation = 'none';
+    setTimeout(() => io.observe(s), 50);
+  });
+
+  // ============ KPI 3D TILT ============
+  document.querySelectorAll('.kpi').forEach(card => {
+    card.addEventListener('mousemove', (e) => {
+      const r = card.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width - 0.5;
+      const y = (e.clientY - r.top) / r.height - 0.5;
+      card.style.transform = `rotateY(${x * 8}deg) rotateX(${-y * 8}deg)`;
+    });
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = 'rotateY(0) rotateX(0)';
+    });
+  });
+</script>
+
+<!-- ============ THREE.JS GRAPH (FORCE-DIRECTED 3D) ============ -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function() {
+  const container = document.getElementById('graph3d');
+  const tooltip = document.getElementById('nodeTooltip');
+  const ttCat = document.getElementById('ttCat');
+  const ttName = document.getElementById('ttName');
+  if (!container || typeof THREE === 'undefined') return;
+
+  // ====== NODES ======
+  // Cluster colors: root = neutral, api = amber, web = sage, ci = cyan
+  const C = { root: 0xF5EFE0, api: 0xE0A95B, web: 0x87A878, ci: 0x7FB8C9 };
+  const CAT_LABEL = { root: 'ROOT', api: 'API · PETSTORE', web: 'WEB · SAUCEDEMO', ci: 'CI · WORKFLOW' };
+
+  const NODES = [
+    { id: 'repo',          label: 'repo',                 cat: 'root', size: 0.32 },
+
+    // ----- API cluster -----
+    { id: 'api_mod',       label: 'api/',                 cat: 'api',  size: 0.26 },
+    { id: 'base_client',   label: 'BaseClient',           cat: 'api',  size: 0.24 },
+    { id: 'pet_client',    label: 'PetClient',            cat: 'api',  size: 0.20 },
+    { id: 'store_client',  label: 'StoreClient',          cat: 'api',  size: 0.20 },
+    { id: 'user_client',   label: 'UserClient',           cat: 'api',  size: 0.20 },
+    { id: 'pet_schema',    label: 'pet_schema',           cat: 'api',  size: 0.16 },
+    { id: 'store_schema',  label: 'store_schema',         cat: 'api',  size: 0.16 },
+    { id: 'user_schema',   label: 'user_schema',          cat: 'api',  size: 0.16 },
+    { id: 'factories',     label: 'factories.py',         cat: 'api',  size: 0.18 },
+    { id: 'conftest_api',  label: 'conftest.py (api)',    cat: 'api',  size: 0.18 },
+    { id: 'test_pet',      label: 'test_pet.py',          cat: 'api',  size: 0.20 },
+    { id: 'test_store',    label: 'test_store.py',        cat: 'api',  size: 0.20 },
+    { id: 'test_user',     label: 'test_user.py',         cat: 'api',  size: 0.20 },
+
+    // ----- Web cluster -----
+    { id: 'web_mod',       label: 'web/',                 cat: 'web',  size: 0.26 },
+    { id: 'base_page',     label: 'BasePage',             cat: 'web',  size: 0.24 },
+    { id: 'login_page',    label: 'LoginPage',            cat: 'web',  size: 0.20 },
+    { id: 'inv_page',      label: 'InventoryPage',        cat: 'web',  size: 0.20 },
+    { id: 'cart_page',     label: 'CartPage',             cat: 'web',  size: 0.20 },
+    { id: 'checkout_page', label: 'CheckoutPage',         cat: 'web',  size: 0.20 },
+    { id: 'driver',        label: 'DriverFactory',        cat: 'web',  size: 0.18 },
+    { id: 'conftest_web',  label: 'conftest.py (web)',    cat: 'web',  size: 0.18 },
+    { id: 'test_login',    label: 'test_login.py',        cat: 'web',  size: 0.20 },
+    { id: 'test_cart',     label: 'test_cart.py',         cat: 'web',  size: 0.20 },
+    { id: 'test_checkout', label: 'test_checkout.py',     cat: 'web',  size: 0.20 },
+
+    // ----- CI cluster -----
+    { id: 'ci_mod',        label: '.github/workflows/',   cat: 'ci',   size: 0.24 },
+    { id: 'wf_api',        label: 'api-tests.yml',        cat: 'ci',   size: 0.20 },
+    { id: 'wf_web',        label: 'web-tests.yml',        cat: 'ci',   size: 0.20 },
+    { id: 'wf_lint',       label: 'lint.yml',             cat: 'ci',   size: 0.18 },
+  ];
+
+  const EDGES = [
+    // Root → modules
+    ['repo', 'api_mod'], ['repo', 'web_mod'], ['repo', 'ci_mod'],
+
+    // API internals
+    ['api_mod', 'base_client'], ['api_mod', 'factories'], ['api_mod', 'conftest_api'],
+    ['base_client', 'pet_client'], ['base_client', 'store_client'], ['base_client', 'user_client'],
+    ['pet_client', 'test_pet'], ['store_client', 'test_store'], ['user_client', 'test_user'],
+    ['factories', 'test_pet'], ['factories', 'test_store'], ['factories', 'test_user'],
+    ['pet_schema', 'test_pet'], ['store_schema', 'test_store'], ['user_schema', 'test_user'],
+    ['conftest_api', 'test_pet'], ['conftest_api', 'test_store'], ['conftest_api', 'test_user'],
+
+    // Web internals
+    ['web_mod', 'base_page'], ['web_mod', 'driver'], ['web_mod', 'conftest_web'],
+    ['base_page', 'login_page'], ['base_page', 'inv_page'], ['base_page', 'cart_page'], ['base_page', 'checkout_page'],
+    ['driver', 'conftest_web'],
+    ['conftest_web', 'test_login'], ['conftest_web', 'test_cart'], ['conftest_web', 'test_checkout'],
+    ['login_page', 'test_login'],
+    ['inv_page', 'test_login'], ['inv_page', 'test_cart'], ['inv_page', 'test_checkout'],
+    ['cart_page', 'test_cart'], ['cart_page', 'test_checkout'],
+    ['checkout_page', 'test_checkout'],
+
+    // CI internals
+    ['ci_mod', 'wf_api'], ['ci_mod', 'wf_web'], ['ci_mod', 'wf_lint'],
+    ['wf_api', 'test_pet'], ['wf_api', 'test_store'], ['wf_api', 'test_user'],
+    ['wf_web', 'test_login'], ['wf_web', 'test_cart'], ['wf_web', 'test_checkout'],
+  ];
+
+  // Index nodes
+  const idx = new Map();
+  NODES.forEach((n, i) => {
+    idx.set(n.id, i);
+    n.x = (Math.random() - 0.5) * 4;
+    n.y = (Math.random() - 0.5) * 3;
+    n.z = (Math.random() - 0.5) * 4;
+    n.vx = n.vy = n.vz = 0;
+  });
+
+  // ====== THREE.JS SETUP ======
+  const scene = new THREE.Scene();
+  const w = container.clientWidth;
+  const h = container.clientHeight;
+  const camera = new THREE.PerspectiveCamera(50, w / h, 0.1, 200);
+  let camR = 11;
+  let camAngleY = 0.4;
+  let camAngleX = 0.15;
+
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(w, h);
+  renderer.setClearColor(0x000000, 0);
+  container.appendChild(renderer.domElement);
+
+  // ====== NODE MESHES ======
+  const sphereGeo = new THREE.SphereGeometry(1, 16, 16);
+  const dotTex = (() => {
+    const c = document.createElement('canvas');
+    c.width = c.height = 64;
+    const ctx = c.getContext('2d');
+    const grd = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+    grd.addColorStop(0, 'rgba(255, 255, 255, 1)');
+    grd.addColorStop(0.5, 'rgba(255, 255, 255, 0.4)');
+    grd.addColorStop(1, 'rgba(255, 255, 255, 0)');
+    ctx.fillStyle = grd;
+    ctx.fillRect(0, 0, 64, 64);
+    return new THREE.CanvasTexture(c);
+  })();
+
+  const nodeMeshes = NODES.map(n => {
+    const mat = new THREE.MeshBasicMaterial({ color: C[n.cat] });
+    const m = new THREE.Mesh(sphereGeo, mat);
+    m.scale.setScalar(n.size);
+    m.userData.node = n;
+    scene.add(m);
+
+    // Halo glow sprite
+    const haloMat = new THREE.SpriteMaterial({
+      map: dotTex,
+      color: C[n.cat],
+      transparent: true,
+      opacity: 0.5,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
+    const halo = new THREE.Sprite(haloMat);
+    halo.scale.setScalar(n.size * 4.5);
+    halo.userData.parent = m;
+    scene.add(halo);
+    n._halo = halo;
+    n._mesh = m;
+    n._mat = mat;
+    return m;
+  });
+
+  // ====== EDGES ======
+  const edgePositions = new Float32Array(EDGES.length * 2 * 3);
+  const edgeColors = new Float32Array(EDGES.length * 2 * 3);
+  const baseColor = new THREE.Color(0x3A4858);
+  EDGES.forEach((e, i) => {
+    baseColor.toArray(edgeColors, i * 6);
+    baseColor.toArray(edgeColors, i * 6 + 3);
+  });
+  const edgeGeo = new THREE.BufferGeometry();
+  edgeGeo.setAttribute('position', new THREE.BufferAttribute(edgePositions, 3));
+  edgeGeo.setAttribute('color', new THREE.BufferAttribute(edgeColors, 3));
+  const edgeMat = new THREE.LineBasicMaterial({
+    vertexColors: true,
+    transparent: true,
+    opacity: 0.55,
+  });
+  const edgeLines = new THREE.LineSegments(edgeGeo, edgeMat);
+  scene.add(edgeLines);
+
+  // ====== FORCE SIMULATION ======
+  const REPEL = 0.45;
+  const SPRING = 0.012;
+  const REST = 1.0;
+  const CENTER = 0.005;
+  const DAMP = 0.86;
+
+  function step() {
+    // Pairwise repulsion
+    for (let i = 0; i < NODES.length; i++) {
+      const a = NODES[i];
+      for (let j = i + 1; j < NODES.length; j++) {
+        const b = NODES[j];
+        let dx = a.x - b.x;
+        let dy = a.y - b.y;
+        let dz = a.z - b.z;
+        let d2 = dx*dx + dy*dy + dz*dz;
+        if (d2 < 0.04) d2 = 0.04;
+        const d = Math.sqrt(d2);
+        const f = REPEL / d2;
+        dx /= d; dy /= d; dz /= d;
+        a.vx += dx * f; a.vy += dy * f; a.vz += dz * f;
+        b.vx -= dx * f; b.vy -= dy * f; b.vz -= dz * f;
+      }
+    }
+    // Spring attraction on edges
+    EDGES.forEach(([aId, bId]) => {
+      const a = NODES[idx.get(aId)];
+      const b = NODES[idx.get(bId)];
+      const dx = a.x - b.x;
+      const dy = a.y - b.y;
+      const dz = a.z - b.z;
+      const d = Math.sqrt(dx*dx + dy*dy + dz*dz) || 0.001;
+      const f = (d - REST) * SPRING;
+      const fx = (dx / d) * f;
+      const fy = (dy / d) * f;
+      const fz = (dz / d) * f;
+      a.vx -= fx; a.vy -= fy; a.vz -= fz;
+      b.vx += fx; b.vy += fy; b.vz += fz;
+    });
+    // Centering
+    NODES.forEach(n => {
+      n.vx -= n.x * CENTER;
+      n.vy -= n.y * CENTER;
+      n.vz -= n.z * CENTER;
+    });
+    // Update + damping
+    NODES.forEach(n => {
+      if (n._fixed) { n.vx = n.vy = n.vz = 0; return; }
+      n.vx *= DAMP; n.vy *= DAMP; n.vz *= DAMP;
+      n.x += n.vx;
+      n.y += n.vy;
+      n.z += n.vz;
+    });
+  }
+
+  function syncVisuals() {
+    NODES.forEach(n => {
+      n._mesh.position.set(n.x, n.y, n.z);
+      n._halo.position.set(n.x, n.y, n.z);
+    });
+    EDGES.forEach(([aId, bId], i) => {
+      const a = NODES[idx.get(aId)];
+      const b = NODES[idx.get(bId)];
+      edgePositions[i*6]     = a.x;
+      edgePositions[i*6 + 1] = a.y;
+      edgePositions[i*6 + 2] = a.z;
+      edgePositions[i*6 + 3] = b.x;
+      edgePositions[i*6 + 4] = b.y;
+      edgePositions[i*6 + 5] = b.z;
+    });
+    edgeGeo.attributes.position.needsUpdate = true;
+  }
+
+  // ====== INTERACTION (drag + hover) ======
+  let isDragging = false;
+  let lastX = 0, lastY = 0;
+  let autoRotate = true;
+
+  container.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    autoRotate = false;
+    lastX = e.clientX;
+    lastY = e.clientY;
+  });
+  window.addEventListener('mouseup', () => { isDragging = false; });
+  window.addEventListener('mousemove', (e) => {
+    if (isDragging) {
+      camAngleY += (e.clientX - lastX) * 0.005;
+      camAngleX += (e.clientY - lastY) * 0.005;
+      camAngleX = Math.max(-1.3, Math.min(1.3, camAngleX));
+      lastX = e.clientX;
+      lastY = e.clientY;
+    }
+  });
+  container.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    camR = Math.max(5, Math.min(20, camR + e.deltaY * 0.01));
+  }, { passive: false });
+
+  // Hover detection (raycaster)
+  const raycaster = new THREE.Raycaster();
+  raycaster.params.Mesh.threshold = 0.1;
+  const mouse = new THREE.Vector2();
+  let hoveredId = null;
+  let hoveredOriginal = null;
+
+  container.addEventListener('mousemove', (e) => {
+    const r = container.getBoundingClientRect();
+    mouse.x = ((e.clientX - r.left) / r.width) * 2 - 1;
+    mouse.y = -((e.clientY - r.top) / r.height) * 2 + 1;
+    raycaster.setFromCamera(mouse, camera);
+    const hits = raycaster.intersectObjects(nodeMeshes, false);
+    if (hits.length > 0) {
+      const node = hits[0].object.userData.node;
+      if (hoveredId !== node.id) {
+        if (hoveredOriginal) {
+          hoveredOriginal.mesh.scale.setScalar(hoveredOriginal.size);
+          hoveredOriginal.halo.material.opacity = 0.5;
+        }
+        hoveredId = node.id;
+        hoveredOriginal = {
+          mesh: node._mesh,
+          halo: node._halo,
+          size: node.size,
+        };
+        node._mesh.scale.setScalar(node.size * 1.45);
+        node._halo.material.opacity = 0.95;
+        ttCat.textContent = CAT_LABEL[node.cat];
+        ttName.textContent = node.label;
+      }
+      tooltip.style.opacity = '1';
+      tooltip.style.left = (e.clientX - r.left) + 'px';
+      tooltip.style.top = (e.clientY - r.top) + 'px';
+      container.style.cursor = 'pointer';
+    } else {
+      if (hoveredOriginal) {
+        hoveredOriginal.mesh.scale.setScalar(hoveredOriginal.size);
+        hoveredOriginal.halo.material.opacity = 0.5;
+        hoveredOriginal = null;
+        hoveredId = null;
+      }
+      tooltip.style.opacity = '0';
+      container.style.cursor = isDragging ? 'grabbing' : 'grab';
+    }
+  });
+
+  // ====== ANIMATE ======
+  let frame = 0;
+  function animate() {
+    frame++;
+    if (autoRotate) camAngleY += 0.0025;
+
+    // Stabilize for first 200 frames, then slow down sim
+    const subSteps = frame < 200 ? 3 : 1;
+    for (let s = 0; s < subSteps; s++) step();
+    syncVisuals();
+
+    // Camera orbit
+    camera.position.x = camR * Math.cos(camAngleX) * Math.sin(camAngleY);
+    camera.position.y = camR * Math.sin(camAngleX);
+    camera.position.z = camR * Math.cos(camAngleX) * Math.cos(camAngleY);
+    camera.lookAt(0, 0, 0);
+
+    renderer.render(scene, camera);
+    requestAnimationFrame(animate);
+  }
+  animate();
+
+  // ====== RESIZE ======
+  let rzTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(rzTimer);
+    rzTimer = setTimeout(() => {
+      const nw = container.clientWidth;
+      const nh = container.clientHeight;
+      camera.aspect = nw / nh;
+      camera.updateProjectionMatrix();
+      renderer.setSize(nw, nh);
+    }, 80);
+  });
+})();
+</script>
+</body>
+</html>

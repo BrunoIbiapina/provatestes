@@ -1,0 +1,208 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 820" role="img" aria-label="Arquitetura do projeto de automação de testes">
+  <defs>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1F2A36" stroke-width="0.5"/>
+    </pattern>
+    <pattern id="dotgrid" width="20" height="20" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.7" fill="#243142"/>
+    </pattern>
+    <linearGradient id="amber" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#E0A95B"/>
+      <stop offset="100%" stop-color="#C88A3B"/>
+    </linearGradient>
+    <linearGradient id="sage" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#87A878"/>
+      <stop offset="100%" stop-color="#5F8060"/>
+    </linearGradient>
+    <linearGradient id="cyan" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#7FB8C9"/>
+      <stop offset="100%" stop-color="#5A8FA0"/>
+    </linearGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#7E8B9C"/>
+    </marker>
+    <marker id="arrowAmber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#E0A95B"/>
+    </marker>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1400" height="820" fill="#0E1521"/>
+  <rect width="1400" height="820" fill="url(#dotgrid)" opacity="0.6"/>
+
+  <!-- Header band -->
+  <g font-family="ui-monospace, 'SF Mono', Consolas, monospace">
+    <text x="60" y="60" font-size="11" fill="#5C6B7E" letter-spacing="3">QA AUTOMATION // SYSTEM SCHEMATIC</text>
+    <text x="60" y="105" font-size="34" font-style="italic" font-family="ui-serif, Georgia, 'Times New Roman', serif" fill="#F5EFE0">Petstore <tspan fill="#E0A95B">×</tspan> SauceDemo</text>
+    <text x="60" y="135" font-size="13" fill="#A8A096" font-family="ui-serif, Georgia, serif" font-style="italic">Repositório único · duas suites · três pipelines</text>
+
+    <!-- Right meta -->
+    <text x="1340" y="60" font-size="10" fill="#5C6B7E" letter-spacing="2" text-anchor="end">REV 1.0 / MAY 2026</text>
+    <text x="1340" y="80" font-size="10" fill="#5C6B7E" letter-spacing="2" text-anchor="end">B. IBIAPINA</text>
+    <line x1="60" y1="160" x2="1340" y2="160" stroke="#243142" stroke-width="1"/>
+  </g>
+
+  <!-- Column headers -->
+  <g font-family="ui-monospace, 'SF Mono', Consolas, monospace" font-size="10" fill="#7E8B9C" letter-spacing="3">
+    <text x="160" y="195">01 // SOURCE</text>
+    <text x="400" y="195">02 // TRIGGER</text>
+    <text x="660" y="195">03 // PIPELINE</text>
+    <text x="940" y="195">04 // TARGET</text>
+    <text x="1180" y="195">05 // ARTIFACTS</text>
+  </g>
+
+  <!-- ===================== NODES ===================== -->
+
+  <!-- 01 SOURCE: developer/commit -->
+  <g>
+    <rect x="80" y="380" width="220" height="100" rx="3" fill="#15202E" stroke="#3A4858" stroke-width="1"/>
+    <text x="100" y="410" font-family="ui-monospace, monospace" font-size="10" fill="#7E8B9C" letter-spacing="2">DEVELOPER</text>
+    <text x="100" y="445" font-family="ui-serif, Georgia, serif" font-style="italic" font-size="22" fill="#F5EFE0">git push</text>
+    <text x="100" y="465" font-family="ui-monospace, monospace" font-size="11" fill="#87A878">→ feat / test / ci / docs</text>
+  </g>
+
+  <!-- 02 TRIGGER: GitHub repo -->
+  <g>
+    <rect x="320" y="320" width="240" height="220" rx="3" fill="#15202E" stroke="#3A4858" stroke-width="1"/>
+    <text x="340" y="350" font-family="ui-monospace, monospace" font-size="10" fill="#7E8B9C" letter-spacing="2">GITHUB REPOSITORY</text>
+    <text x="340" y="382" font-family="ui-serif, Georgia, serif" font-style="italic" font-size="20" fill="#F5EFE0">trabalho-qa</text>
+    <line x1="340" y1="400" x2="540" y2="400" stroke="#243142"/>
+
+    <text x="340" y="425" font-family="ui-monospace, monospace" font-size="11" fill="#A8A096">├─ api/</text>
+    <text x="340" y="445" font-family="ui-monospace, monospace" font-size="11" fill="#A8A096">├─ web/</text>
+    <text x="340" y="465" font-family="ui-monospace, monospace" font-size="11" fill="#A8A096">├─ .github/workflows/</text>
+    <text x="340" y="485" font-family="ui-monospace, monospace" font-size="11" fill="#A8A096">├─ Makefile</text>
+    <text x="340" y="505" font-family="ui-monospace, monospace" font-size="11" fill="#A8A096">└─ README.md</text>
+
+    <circle cx="540" cy="350" r="4" fill="#87A878"/>
+    <text x="528" y="352" font-family="ui-monospace, monospace" font-size="9" fill="#87A878" text-anchor="end">main</text>
+  </g>
+
+  <!-- 03 PIPELINES: 3 workflows -->
+  <g>
+    <!-- lint.yml -->
+    <rect x="600" y="240" width="280" height="100" rx="3" fill="#15202E" stroke="#5A8FA0" stroke-width="1.5"/>
+    <rect x="600" y="240" width="6" height="100" fill="#7FB8C9"/>
+    <text x="620" y="268" font-family="ui-monospace, monospace" font-size="10" fill="#7FB8C9" letter-spacing="2">WORKFLOW · 01</text>
+    <text x="620" y="298" font-family="ui-serif, Georgia, serif" font-style="italic" font-size="22" fill="#F5EFE0">lint.yml</text>
+    <text x="620" y="320" font-family="ui-monospace, monospace" font-size="11" fill="#A8A096">flake8 · pep8 compliance</text>
+
+    <!-- api-tests.yml -->
+    <rect x="600" y="380" width="280" height="100" rx="3" fill="#15202E" stroke="#C88A3B" stroke-width="1.5"/>
+    <rect x="600" y="380" width="6" height="100" fill="#E0A95B"/>
+    <text x="620" y="408" font-family="ui-monospace, monospace" font-size="10" fill="#E0A95B" letter-spacing="2">WORKFLOW · 02</text>
+    <text x="620" y="438" font-family="ui-serif, Georgia, serif" font-style="italic" font-size="22" fill="#F5EFE0">api-tests.yml</text>
+    <text x="620" y="460" font-family="ui-monospace, monospace" font-size="11" fill="#A8A096">matrix · python 3.11 + 3.12</text>
+
+    <!-- web-tests.yml -->
+    <rect x="600" y="520" width="280" height="100" rx="3" fill="#15202E" stroke="#5F8060" stroke-width="1.5"/>
+    <rect x="600" y="520" width="6" height="100" fill="#87A878"/>
+    <text x="620" y="548" font-family="ui-monospace, monospace" font-size="10" fill="#87A878" letter-spacing="2">WORKFLOW · 03</text>
+    <text x="620" y="578" font-family="ui-serif, Georgia, serif" font-style="italic" font-size="22" fill="#F5EFE0">web-tests.yml</text>
+    <text x="620" y="600" font-family="ui-monospace, monospace" font-size="11" fill="#A8A096">chrome · headless · 1920×1080</text>
+  </g>
+
+  <!-- 04 TARGETS -->
+  <g>
+    <!-- Petstore -->
+    <rect x="900" y="380" width="240" height="100" rx="3" fill="#1A1612" stroke="#C88A3B" stroke-width="1" stroke-dasharray="4 3"/>
+    <text x="920" y="408" font-family="ui-monospace, monospace" font-size="10" fill="#E0A95B" letter-spacing="2">EXTERNAL · API</text>
+    <text x="920" y="438" font-family="ui-serif, Georgia, serif" font-style="italic" font-size="20" fill="#F5EFE0">Swagger Petstore</text>
+    <text x="920" y="460" font-family="ui-monospace, monospace" font-size="10" fill="#A8A096">/v2 · pet · store · user</text>
+
+    <!-- SauceDemo -->
+    <rect x="900" y="520" width="240" height="100" rx="3" fill="#1A1612" stroke="#5F8060" stroke-width="1" stroke-dasharray="4 3"/>
+    <text x="920" y="548" font-family="ui-monospace, monospace" font-size="10" fill="#87A878" letter-spacing="2">EXTERNAL · WEB</text>
+    <text x="920" y="578" font-family="ui-serif, Georgia, serif" font-style="italic" font-size="20" fill="#F5EFE0">SauceDemo</text>
+    <text x="920" y="600" font-family="ui-monospace, monospace" font-size="10" fill="#A8A096">login · cart · checkout</text>
+  </g>
+
+  <!-- 05 ARTIFACTS -->
+  <g>
+    <rect x="1160" y="240" width="200" height="100" rx="3" fill="#15202E" stroke="#3A4858" stroke-width="1"/>
+    <text x="1180" y="268" font-family="ui-monospace, monospace" font-size="10" fill="#7E8B9C" letter-spacing="2">REPORT</text>
+    <text x="1180" y="298" font-family="ui-serif, Georgia, serif" font-style="italic" font-size="20" fill="#F5EFE0">Allure</text>
+    <text x="1180" y="320" font-family="ui-monospace, monospace" font-size="10" fill="#A8A096">epic / feature / story</text>
+
+    <rect x="1160" y="380" width="200" height="100" rx="3" fill="#15202E" stroke="#3A4858" stroke-width="1"/>
+    <text x="1180" y="408" font-family="ui-monospace, monospace" font-size="10" fill="#7E8B9C" letter-spacing="2">REPORT</text>
+    <text x="1180" y="438" font-family="ui-serif, Georgia, serif" font-style="italic" font-size="20" fill="#F5EFE0">HTML</text>
+    <text x="1180" y="460" font-family="ui-monospace, monospace" font-size="10" fill="#A8A096">pytest-html · self-contained</text>
+
+    <rect x="1160" y="520" width="200" height="100" rx="3" fill="#15202E" stroke="#3A4858" stroke-width="1"/>
+    <text x="1180" y="548" font-family="ui-monospace, monospace" font-size="10" fill="#7E8B9C" letter-spacing="2">ON FAILURE</text>
+    <text x="1180" y="578" font-family="ui-serif, Georgia, serif" font-style="italic" font-size="20" fill="#F5EFE0">Screenshots</text>
+    <text x="1180" y="600" font-family="ui-monospace, monospace" font-size="10" fill="#A8A096">auto-attached · png</text>
+  </g>
+
+  <!-- ===================== CONNECTORS ===================== -->
+  <g fill="none" stroke-width="1.2">
+    <!-- source → repo -->
+    <path d="M 300 430 L 320 430" stroke="#7E8B9C" marker-end="url(#arrow)"/>
+
+    <!-- repo → 3 pipelines (branching) -->
+    <path d="M 560 400 C 580 400, 580 290, 600 290" stroke="#7FB8C9" marker-end="url(#arrow)"/>
+    <path d="M 560 430 L 600 430" stroke="#E0A95B" marker-end="url(#arrowAmber)"/>
+    <path d="M 560 460 C 580 460, 580 570, 600 570" stroke="#87A878" marker-end="url(#arrow)"/>
+
+    <!-- api workflow → petstore -->
+    <path d="M 880 430 L 900 430" stroke="#E0A95B" marker-end="url(#arrowAmber)"/>
+
+    <!-- web workflow → saucedemo -->
+    <path d="M 880 570 L 900 570" stroke="#87A878" marker-end="url(#arrow)"/>
+
+    <!-- targets → artifacts -->
+    <path d="M 1140 430 C 1150 430, 1150 290, 1160 290" stroke="#7E8B9C" marker-end="url(#arrow)" stroke-dasharray="3 3"/>
+    <path d="M 1140 430 L 1160 430" stroke="#7E8B9C" marker-end="url(#arrow)" stroke-dasharray="3 3"/>
+    <path d="M 1140 570 L 1160 570" stroke="#7E8B9C" marker-end="url(#arrow)" stroke-dasharray="3 3"/>
+
+    <!-- lint → web (cyan) decoration -->
+    <path d="M 740 340 L 740 380" stroke="#3A4858" stroke-dasharray="2 4"/>
+    <path d="M 740 480 L 740 520" stroke="#3A4858" stroke-dasharray="2 4"/>
+  </g>
+
+  <!-- ===================== TRIGGERS LEGEND ===================== -->
+  <g transform="translate(60, 690)">
+    <line x1="0" y1="0" x2="1280" y2="0" stroke="#243142"/>
+    <text x="0" y="25" font-family="ui-monospace, monospace" font-size="10" fill="#5C6B7E" letter-spacing="3">TRIGGERS</text>
+
+    <g font-family="ui-monospace, monospace" font-size="11" fill="#A8A096">
+      <circle cx="120" cy="22" r="3" fill="#E0A95B"/>
+      <text x="135" y="26">push</text>
+
+      <circle cx="220" cy="22" r="3" fill="#E0A95B"/>
+      <text x="235" y="26">pull_request</text>
+
+      <circle cx="370" cy="22" r="3" fill="#7FB8C9"/>
+      <text x="385" y="26">schedule · 0 7 * * 1</text>
+
+      <circle cx="585" cy="22" r="3" fill="#87A878"/>
+      <text x="600" y="26">workflow_dispatch</text>
+    </g>
+
+    <text x="0" y="65" font-family="ui-monospace, monospace" font-size="10" fill="#5C6B7E" letter-spacing="3">PATTERNS</text>
+    <g font-family="ui-monospace, monospace" font-size="11" fill="#A8A096">
+      <text x="120" y="69">Page Object Model</text>
+      <text x="280" y="69">·</text>
+      <text x="295" y="69">Service / Client</text>
+      <text x="425" y="69">·</text>
+      <text x="440" y="69">Factory (Faker)</text>
+      <text x="565" y="69">·</text>
+      <text x="580" y="69">JSON Schema validation</text>
+      <text x="765" y="69">·</text>
+      <text x="780" y="69">Explicit Waits</text>
+      <text x="890" y="69">·</text>
+      <text x="905" y="69">Auto-Cleanup Fixtures</text>
+    </g>
+  </g>
+
+  <!-- Footer marks -->
+  <g font-family="ui-monospace, monospace" font-size="9" fill="#3A4858" letter-spacing="2">
+    <text x="60" y="800">— END OF SCHEMATIC —</text>
+    <text x="1340" y="800" text-anchor="end">PAGE 01 / 01</text>
+  </g>
+</svg>
