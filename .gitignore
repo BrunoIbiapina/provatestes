@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.pytest_cache/
+.venv/
+venv/
+env/
+
+# Test reports
+allure-results/
+allure-report/
+htmlcov/
+.coverage
+coverage.xml
+report.html
+screenshots/
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# Env
+.env
+.env.local
+
+# Leftovers de sessoes antigas (apagar manualmente)
+test-automation/
+Automacao_de_Testes_Guia_Completo.pdf
