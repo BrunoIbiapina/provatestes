@@ -10,8 +10,25 @@ from config import Config
 
 
 class DriverFactory:
+    """Cria instancias de WebDriver com base na configuracao.
+
+    Suporta Chrome e Firefox, modo visual ou headless. Usa
+    `webdriver-manager` para baixar o driver compativel com o
+    browser instalado, eliminando a necessidade de configurar
+    PATH manualmente.
+    """
+
     @staticmethod
     def create():
+        """Cria e retorna o WebDriver configurado.
+
+        Le `Config.BROWSER` (`chrome` ou `firefox`) e `Config.HEADLESS`.
+        Para Chrome, aplica flags de estabilidade em CI
+        (`--no-sandbox`, `--disable-dev-shm-usage`) e fixa resolucao 1920x1080.
+
+        Raises:
+            ValueError: se o browser configurado nao for suportado.
+        """
         browser = Config.BROWSER.lower()
         if browser == "chrome":
             options = ChromeOptions()

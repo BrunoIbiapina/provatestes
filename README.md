@@ -157,9 +157,15 @@ O relatorio abre no navegador com:
 - Categorizacao por epic/feature/story
 - Historico
 
-## Estrategia de testes
+## Documentacao
 
-Veja [TEST_STRATEGY.md](./TEST_STRATEGY.md) para detalhes da piramide de testes, criterios de selecao de cenarios, abordagem de dados e padroes de codigo adotados.
+| Documento | Conteudo |
+|-----------|----------|
+| [TEST_STRATEGY.md](./TEST_STRATEGY.md) | Piramide de testes, criterios de selecao, abordagem de dados |
+| [ARCHITECTURE.md](./ARCHITECTURE.md) | Arquitetura, padroes (Service/Client, POM), camadas, decisoes |
+| [TEST_CASES.md](./TEST_CASES.md) | Catalogo formal dos 38 casos de teste com IDs e resultados esperados |
+| [api/README.md](./api/README.md) | Detalhes do projeto de API |
+| [web/README.md](./web/README.md) | Detalhes do projeto Web |
 
 ## Padroes adotados
 

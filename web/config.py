@@ -5,6 +5,17 @@ load_dotenv()
 
 
 class Config:
+    """Configuracao do projeto Web, carregada de variaveis de ambiente.
+
+    Variaveis suportadas:
+        BASE_URL: URL base do app sob teste (default: SauceDemo).
+        BROWSER: `chrome` ou `firefox`.
+        HEADLESS: `true`/`false` — controla se o browser abre janela.
+        IMPLICIT_WAIT / EXPLICIT_WAIT: timeouts em segundos.
+        STANDARD_USER / LOCKED_USER / PROBLEM_USER / PASSWORD: credenciais
+            de teste do SauceDemo.
+    """
+
     BASE_URL = os.getenv("BASE_URL", "https://www.saucedemo.com")
     BROWSER = os.getenv("BROWSER", "chrome")
     HEADLESS = os.getenv("HEADLESS", "false").lower() == "true"

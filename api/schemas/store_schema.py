@@ -1,3 +1,9 @@
+"""JSON Schemas para validacao de contrato dos endpoints de Store.
+
+`ORDER_SCHEMA` valida o body de uma order individual (POST/GET).
+`INVENTORY_SCHEMA` valida o mapa retornado por GET /store/inventory
+(chaves arbitrarias com valores inteiros).
+"""
 ORDER_SCHEMA = {
     "type": "object",
     "required": ["id", "petId", "quantity", "status"],
