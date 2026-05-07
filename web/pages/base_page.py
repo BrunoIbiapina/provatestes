@@ -29,8 +29,16 @@ class BasePage:
         return self.wait.until(EC.presence_of_element_located(locator))
 
     def click(self, locator):
-        """Espera o elemento ser clicavel e clica."""
-        self.wait.until(EC.element_to_be_clickable(locator)).click()
+        """Espera o elemento ser clicavel e clica via JS.
+
+        Usar `execute_script("arguments[0].click()")` em vez do click do
+        W3C evita flakiness em `headless=new` no Linux, onde o click
+        nativo dispara em coordenadas de elementos que o React acabou
+        de re-renderizar (segundo click de uma sequencia "passa" sem
+        rodar o handler).
+        """
+        element = self.wait.until(EC.element_to_be_clickable(locator))
+        self.driver.execute_script("arguments[0].click();", element)
 
     def type(self, locator, text: str):
         """Espera o elemento, limpa o conteudo e digita `text`."""
