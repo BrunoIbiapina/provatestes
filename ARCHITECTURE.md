@@ -167,7 +167,7 @@ Cada classe expõe:
 - Suporta Chrome e Firefox (via `Config.BROWSER`)
 - Headless toggle via `HEADLESS=true`
 - Flags padrão (`--no-sandbox`, `--disable-dev-shm-usage`, resolução fixa) pra estabilidade em CI
-- `webdriver-manager` baixa o driver compatível com o browser instalado — zero setup manual
+- Selenium Manager (embutido no Selenium 4.6+) resolve o driver compatível com o browser instalado — zero setup manual
 
 ### 3.5 Hook de screenshot em falha
 
@@ -255,7 +255,7 @@ Os artifacts (HTML + Allure + screenshots de falha) ficam disponíveis pra downl
 | Service/Client (API) | Helpers funcionais soltos | Encapsula estado (session, base_url), facilita extensão |
 | `jsonschema` (API) | Pydantic | Schema declarativo é mais leve e independe da versão do Python |
 | Page Object (Web) | Testes "scriptados" com Selenium puro | Manutenção centralizada de seletores |
-| `webdriver-manager` | Baixar driver manualmente | Zero setup, sempre compatível com browser instalado |
+| Selenium Manager (built-in) | `webdriver-manager` ou driver manual | Zero setup, sem dependência extra, sempre alinhado ao Chrome instalado (resolveu flakiness em CI headless) |
 | `requests.Session` | `requests.get/post` direto | Connection pooling + headers persistentes |
 | Fixtures com teardown | Suite "criar e esquecer" | Isolamento entre testes, sem dados poluídos |
 | `pytest-html` + Allure | Só Allure | HTML simples roda sem CLI extra (útil em CI), Allure é o detalhado |

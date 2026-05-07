@@ -63,7 +63,7 @@ git push
 | Linguagem | Python 3.11+ |
 | Framework de testes | pytest |
 | API | requests + jsonschema + Faker |
-| Web | Selenium 4 + webdriver-manager |
+| Web | Selenium 4 (Selenium Manager) |
 | Relatorios | Allure Report + pytest-html |
 | CI/CD | GitHub Actions |
 | Lint | flake8 |

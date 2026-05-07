@@ -6,8 +6,7 @@ Suite de testes E2E para [SauceDemo](https://www.saucedemo.com/) usando Selenium
 
 - Python 3.11+
 - pytest 8
-- Selenium 4
-- webdriver-manager (driver automatico)
+- Selenium 4 (driver via Selenium Manager embutido)
 - Allure Report
 - pytest-html
 
@@ -33,7 +32,7 @@ pip install -r requirements.txt
 cp .env.example .env
 ```
 
-Chrome ou Firefox precisa estar instalado. O `webdriver-manager` baixa o driver automaticamente.
+Chrome ou Firefox precisa estar instalado. O Selenium Manager (embutido no Selenium 4.6+) baixa o driver automaticamente.
 
 ## Execucao
 
