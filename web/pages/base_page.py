@@ -1,3 +1,4 @@
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
@@ -41,10 +42,18 @@ class BasePage:
         self.driver.execute_script("arguments[0].click();", element)
 
     def type(self, locator, text: str):
-        """Espera o elemento, limpa o conteudo e digita `text`."""
+        """Espera o elemento, limpa o conteudo e digita `text`.
+
+        Usar Ctrl+A / Delete em vez de `element.clear()` evita race com
+        re-renderizacao em `headless=new` no Linux: o clear() dispara
+        input/blur que re-renderiza o campo no meio do send_keys
+        seguinte, fazendo caracteres se perderem silenciosamente.
+        """
         element = self.find(locator)
-        element.clear()
-        element.send_keys(text)
+        element.send_keys(Keys.CONTROL + "a")
+        element.send_keys(Keys.DELETE)
+        if text:
+            element.send_keys(text)
 
     def text_of(self, locator) -> str:
         """Retorna o texto visivel do elemento."""
