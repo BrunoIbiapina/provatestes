@@ -1,4 +1,3 @@
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
@@ -42,18 +41,29 @@ class BasePage:
         self.driver.execute_script("arguments[0].click();", element)
 
     def type(self, locator, text: str):
-        """Espera o elemento, limpa o conteudo e digita `text`.
+        """Espera o elemento e seta `text` via JS + eventos nativos.
 
-        Usar Ctrl+A / Delete em vez de `element.clear()` evita race com
-        re-renderizacao em `headless=new` no Linux: o clear() dispara
-        input/blur que re-renderiza o campo no meio do send_keys
-        seguinte, fazendo caracteres se perderem silenciosamente.
+        Em `headless=new` no Linux, send_keys nos inputs do checkout
+        falha silenciosamente (caracteres se perdem). Setar `value`
+        direto via JS e disparar `input`/`change` reproduz o efeito
+        do teclado sem race com foco/re-render.
         """
         element = self.find(locator)
-        element.send_keys(Keys.CONTROL + "a")
-        element.send_keys(Keys.DELETE)
-        if text:
-            element.send_keys(text)
+        self.driver.execute_script(
+            """
+            const el = arguments[0];
+            const value = arguments[1];
+            const proto = el.tagName === 'TEXTAREA'
+                ? HTMLTextAreaElement.prototype
+                : HTMLInputElement.prototype;
+            const setter = Object.getOwnPropertyDescriptor(proto, 'value').set;
+            setter.call(el, value);
+            el.dispatchEvent(new Event('input', {bubbles: true}));
+            el.dispatchEvent(new Event('change', {bubbles: true}));
+            """,
+            element,
+            text,
+        )
 
     def text_of(self, locator) -> str:
         """Retorna o texto visivel do elemento."""
